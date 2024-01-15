@@ -9,7 +9,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 // for any path that's not in endpoint
-describe("Invalid path", () => {
+describe("invalid path", () => {
   test("status:404 returns appropriate message for any invalid path", () => {
     return request(app)
       .get("/not-a-valid-path")
@@ -66,6 +66,77 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.allEndpoints).toEqual(endpointJson);
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("status:200 returns an article object", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body.article).toBe("object");
+      });
+  });
+  test("status:200 returns an article object that has 8 properties", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body.article).length).toBe(8);
+      });
+  });
+  test("status:200 returns an article object with correct datatype for each property", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("status:200 returns an article object with correct property names", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body.article)).toEqual(
+          expect.arrayContaining([
+            "author",
+            "title",
+            "article_id",
+            "body",
+            "topic",
+            "created_at",
+            "votes",
+            "article_img_url",
+          ])
+        );
+      });
+  });
+  test("status:404 returns appropriate message when a valid but non-existent id is entered", () => {
+    return request(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article does not exist");
+      });
+  });
+  test("status:400 returns appropriate message when an invalid id is entered", () => {
+    return request(app)
+      .get("/api/articles/invalid-id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
       });
   });
 });
