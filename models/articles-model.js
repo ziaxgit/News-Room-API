@@ -3,7 +3,9 @@ const db = require("../db/connection");
 function fetchArticleById(articleId) {
   const sqlQuery = `SELECT * FROM articles WHERE articles.article_id = $1`;
   return db.query(sqlQuery, [articleId]).then(({ rows }) => {
-    return rows.length === 0 ? Promise.reject({ articleFound: 0 }) : rows[0];
+    return rows.length === 0
+      ? Promise.reject({ noArticleFound: true })
+      : rows[0];
   });
 }
 
@@ -17,4 +19,18 @@ function fetchAllArticles() {
   return db.query(sqlQuery).then(({ rows }) => rows);
 }
 
-module.exports = { fetchArticleById, fetchAllArticles };
+function fetchCommentsByArticleId(articleId) {
+  const sqlQuery = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM 
+  articles JOIN comments ON articles.article_id = comments.article_id
+  WHERE articles.article_id = $1
+  ORDER BY comments.created_at DESC`;
+  return db.query(sqlQuery, [articleId]).then(({ rows }) => {
+    return rows.length === 0 ? Promise.reject({ noCommentsFound: true }) : rows;
+  });
+}
+
+module.exports = {
+  fetchArticleById,
+  fetchAllArticles,
+  fetchCommentsByArticleId,
+};
