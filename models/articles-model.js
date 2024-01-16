@@ -4,7 +4,7 @@ function fetchArticleById(articleId) {
   const sqlQuery = `SELECT * FROM articles WHERE articles.article_id = $1`;
   return db.query(sqlQuery, [articleId]).then(({ rows }) => {
     return rows.length === 0
-      ? Promise.reject({ noArticleFound: true })
+      ? Promise.reject({ status: 404, message: "Article does not exist" })
       : rows[0];
   });
 }
@@ -20,13 +20,15 @@ function fetchAllArticles() {
 }
 
 function fetchCommentsByArticleId(articleId) {
-  const sqlQuery = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM 
-  articles JOIN comments ON articles.article_id = comments.article_id
-  WHERE articles.article_id = $1
-  ORDER BY comments.created_at DESC`;
-  return db.query(sqlQuery, [articleId]).then(({ rows }) => {
-    return rows.length === 0 ? Promise.reject({ noCommentsFound: true }) : rows;
-  });
+  return fetchArticleById(articleId)
+    .then(() => {
+      const sqlQuery = `SELECT * FROM 
+    articles a JOIN comments c ON a.article_id = c.article_id
+    WHERE a.article_id = $1
+    ORDER BY c.created_at DESC`;
+      return db.query(sqlQuery, [articleId]);
+    })
+    .then(({ rows }) => rows);
 }
 
 function insertCommentByArticleId(req) {

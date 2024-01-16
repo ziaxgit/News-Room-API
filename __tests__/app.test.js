@@ -9,7 +9,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 // for any path that's not in endpoint
-describe("invalid path", () => {
+describe("Invalid path", () => {
   test("status:404 returns appropriate message for any invalid path", () => {
     return request(app)
       .get("/not-a-valid-path")
@@ -221,14 +221,24 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+  test("status:200 returns empty comments array if the given article id does not have any comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.message).toBe("No comments found");
+        expect(body.comments).toEqual([]);
+        expect(body.comments.length).toBe(0);
       });
   });
+  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+    return request(app)
+      .get("/api/articles/683/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article does not exist");
+      });
+  });
+
   test("status:400 returns appropriate message when an invalid article id is entered", () => {
     return request(app)
       .get("/api/articles/not-an-id/comments")
