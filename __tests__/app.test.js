@@ -147,9 +147,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        body.articles.forEach((article) => {
-          expect(typeof article).toBe("object");
-        });
+        expect(Array.isArray(body.articles)).toBe(true);
       });
   });
   test("status:200 returned array should have 5 objects inside", () => {
@@ -158,6 +156,9 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles.length).toBe(5);
+        body.articles.forEach((article) => {
+          expect(typeof article).toBe("object");
+        });
       });
   });
   test("status:200 each object should have the correct properties and datatype", () => {
@@ -189,12 +190,67 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("status:404 returns apropriate message when an invalid path is entered", () => {
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status:200 returns an array of comments", () => {
     return request(app)
-      .get("/api/article")
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+      });
+  });
+  test("status:200 returned array should have 11 objects inside", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(11);
+        body.comments.forEach((comment) => {
+          expect(typeof comment).toBe("object");
+        });
+      });
+  });
+  test("status:200 each object should have the expected property names and datatype", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .then(({ body }) => {
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("status:200 returned comments array should be sorted by the most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Not Found");
+        expect(body.message).toBe("No comments found");
+      });
+  });
+  test("status:400 returns appropriate message when an invalid article id is entered", () => {
+    return request(app)
+      .get("/api/articles/not-an-id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
       });
   });
 });

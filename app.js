@@ -5,6 +5,7 @@ const { getAllTopics } = require("./controllers/topics-controller");
 const {
   getArticleById,
   getAllArticles,
+  getCommentsByArticleId,
 } = require("./controllers/articles-controller");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -12,6 +13,7 @@ app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.use(errorHandler);
 
