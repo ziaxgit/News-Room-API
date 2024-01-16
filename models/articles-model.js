@@ -38,14 +38,30 @@ function insertCommentByArticleId(req) {
   VALUES
   ($1, $2, $3)
   RETURNING *`;
-
   return db.query(sqlQuery, values).then(({ rows }) => {
     return rows[0];
   });
 }
+
+function updateArticleById(req) {
+  return fetchArticleById(req.params.article_id)
+    .then(() => {
+      const values = [req.body.inc_votes, req.params.article_id];
+      const sqlQuery = `UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *`;
+      return db.query(sqlQuery, values);
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+}
+
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
   fetchCommentsByArticleId,
   insertCommentByArticleId,
+  updateArticleById,
 };
