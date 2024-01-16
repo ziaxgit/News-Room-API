@@ -3,7 +3,7 @@ const app = express();
 const getAllEndpoints = require("./controllers/endpoint-controller");
 const { getAllTopics } = require("./controllers/topics-controller");
 const { getArticleById } = require("./controllers/articles-controller");
-const errorHandler = require("./controllers/error-controller");
+const errorHandler = require("./middleware/errorHandler");
 
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);
