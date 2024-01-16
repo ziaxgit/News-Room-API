@@ -150,22 +150,13 @@ describe("GET /api/articles", () => {
         expect(Array.isArray(body.articles)).toBe(true);
       });
   });
-  test("status:200 returned array should have 5 objects inside", () => {
+
+  test("status:200 returns an array of article objects with the expected property names and datatype", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles.length).toBe(5);
-        body.articles.forEach((article) => {
-          expect(typeof article).toBe("object");
-        });
-      });
-  });
-  test("status:200 each object should have the correct properties and datatype", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -201,20 +192,13 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(Array.isArray(body.comments)).toBe(true);
       });
   });
-  test("status:200 returned array should have 11 objects inside", () => {
+
+  test("status:200 returns an array of objects with the expected property names and datatype", () => {
     return request(app)
       .get("/api/articles/1/comments")
+      .expect(200)
       .then(({ body }) => {
         expect(body.comments.length).toBe(11);
-        body.comments.forEach((comment) => {
-          expect(typeof comment).toBe("object");
-        });
-      });
-  });
-  test("status:200 each object should have the expected property names and datatype", () => {
-    return request(app)
-      .get("/api/articles/5/comments")
-      .then(({ body }) => {
         body.comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -248,6 +232,54 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("status:400 returns appropriate message when an invalid article id is entered", () => {
     return request(app)
       .get("/api/articles/not-an-id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("status:201 inserts a new comment and returns the newly created comment", () => {
+    const testObj = {
+      username: "butter_bridge",
+      body: "I cease to exist for experimental purposes only",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testObj)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "I cease to exist for experimental purposes only",
+          article_id: 1,
+          author: "butter_bridge",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("status:400 returns appropriate message if any properties are missed", () => {
+    const testObj = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testObj)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns appropriate message if author_id and author of the article does not match", () => {
+    const testObj = {
+      username: "test_user",
+      body: "I cease to exist for experimental purposes only",
+    };
+    return request(app)
+      .post("/api/articles/99999/comments")
+      .send(testObj)
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");

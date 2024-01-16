@@ -29,8 +29,21 @@ function fetchCommentsByArticleId(articleId) {
   });
 }
 
+function insertCommentByArticleId(req) {
+  const values = [req.body.body, req.params.article_id, req.body.username];
+  const sqlQuery = `INSERT INTO comments
+  (body, article_id, author)
+  VALUES
+  ($1, $2, $3)
+  RETURNING *`;
+
+  return db.query(sqlQuery, values).then(({ rows }) => {
+    return rows[0];
+  });
+}
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
   fetchCommentsByArticleId,
+  insertCommentByArticleId,
 };
