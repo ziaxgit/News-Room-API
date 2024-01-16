@@ -2,12 +2,16 @@ const express = require("express");
 const app = express();
 const getAllEndpoints = require("./controllers/endpoint-controller");
 const { getAllTopics } = require("./controllers/topics-controller");
-const { getArticleById } = require("./controllers/articles-controller");
+const {
+  getArticleById,
+  getAllArticles,
+} = require("./controllers/articles-controller");
 const errorHandler = require("./middleware/errorHandler");
 
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles", getAllArticles);
 
 app.use(errorHandler);
 
