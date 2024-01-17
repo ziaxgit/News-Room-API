@@ -9,14 +9,27 @@ function fetchArticleById(articleId) {
   });
 }
 
-function fetchAllArticles() {
-  const sqlQuery = `SELECT articles.author, articles.title, articles.article_id, 
-  articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-  COUNT(comments.comment_id)::INT as comment_count FROM articles 
-  JOIN comments ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC`;
-  return db.query(sqlQuery).then(({ rows }) => rows);
+function fetchAllArticles(queryObj) {
+  const topic = queryObj.topic;
+  if (
+    Object.keys(queryObj).length > 0 &&
+    !Object.keys(queryObj).includes("topic")
+  ) {
+    return Promise.reject({ status: 400, message: "Invalid query" });
+  }
+  let sqlQuery = `SELECT a.author, a.title, a.article_id, a.topic, a.created_at,
+  a.votes, a.article_img_url, COUNT(c.comment_id)::INT AS comment_count
+  FROM articles a JOIN comments c ON a.article_id = c.article_id`;
+
+  if (topic) {
+    sqlQuery += ` WHERE a.topic = '${topic}'`;
+  }
+
+  sqlQuery += ` GROUP BY a.article_id, a.author, a.title, a.topic, a.created_at, a.votes, a.article_img_url
+  ORDER BY a.created_at DESC`;
+  return db.query(sqlQuery).then(({ rows }) => {
+    return rows;
+  });
 }
 
 function fetchCommentsByArticleId(articleId) {

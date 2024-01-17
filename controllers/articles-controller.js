@@ -5,6 +5,7 @@ const {
   insertCommentByArticleId,
   updateArticleById,
 } = require("../models/articles-model");
+const { topicValidation } = require("../utils/topicValidation");
 
 function getArticleById(req, res, next) {
   fetchArticleById(req.params.article_id)
@@ -17,11 +18,13 @@ function getArticleById(req, res, next) {
 }
 
 function getAllArticles(req, res, next) {
-  fetchAllArticles()
+  Promise.all([topicValidation(req.query.topic), fetchAllArticles(req.query)])
     .then((data) => {
-      res.status(200).send({ articles: data });
+      res.status(200).send({ articles: data[1] });
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      next(err);
+    });
 }
 
 function getCommentsByArticleId(req, res, next) {

@@ -442,3 +442,50 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/articles - Topic query", () => {
+  test("status:200 returns only the articles that match the given query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(1);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: "rogersop",
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            article_id: 5,
+            topic: "cats",
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+      });
+  });
+  test("status:200 returns empty array if given a topic that exists but has no article", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("status:404 returns correct error message if given a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=idontexist")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Topic not found");
+      });
+  });
+  test("status:400 returns correct error message if given an invalid query", () => {
+    return request(app)
+      .get("/api/articles?random=cats")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid query");
+      });
+  });
+});
