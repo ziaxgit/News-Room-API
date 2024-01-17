@@ -73,7 +73,7 @@ describe("GET /api", () => {
 describe("GET /api/articles/:article_id", () => {
   test("status:200 returns an article object", () => {
     return request(app)
-      .get("/api/articles/1")
+      .get("/api/articles/4")
       .expect(200)
       .then(({ body }) => {
         expect(typeof body.article).toBe("object");
@@ -290,6 +290,101 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/99999/comments")
       .send(testObj)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("status:200 returns an article object", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 22 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body.article).toBe("object");
+      });
+  });
+  test("status:200 returns updated article object with incremented votes and other properties", () => {
+    return request(app)
+      .patch("/api/articles/4")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 4,
+          title: "Student SUES Mitch!",
+          topic: "mitch",
+          author: "rogersop",
+          body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+          created_at: "2020-05-06T01:14:00.000Z",
+          votes: 1, // incremented from 0 to 1
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("status:200 returns updated article object with decremented votes and other properties", () => {
+    return request(app)
+      .patch("/api/articles/4")
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 4,
+          title: "Student SUES Mitch!",
+          topic: "mitch",
+          author: "rogersop",
+          body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+          created_at: "2020-05-06T01:14:00.000Z",
+          votes: -100, // decremented from 0 to -100
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: -10 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article does not exist");
+      });
+  });
+  test("status:400 returns appropriate message when an invalid article id is entered", () => {
+    return request(app)
+      .patch("/api/articles/invalid-id")
+      .send({ inc_votes: -10 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns appropriate message if body does not have any information", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns appropriate message if invalid data is given inside body", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: "invalid" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns appropriate message if invalid field (not inc_votes) is entered", () => {
+    return request(app)
+      .patch("/api/articles/4")
+      .send({ invalid_field: 3 })
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");

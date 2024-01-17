@@ -3,6 +3,7 @@ const {
   fetchAllArticles,
   fetchCommentsByArticleId,
   insertCommentByArticleId,
+  updateArticleById,
 } = require("../models/articles-model");
 
 function getArticleById(req, res, next) {
@@ -39,9 +40,18 @@ function postCommentByArticleId(req, res, next) {
     .catch((err) => next(err));
 }
 
+function patchArticleById(req, res, next) {
+  updateArticleById(req)
+    .then((data) => {
+      res.status(200).send({ article: data });
+    })
+    .catch((err) => next(err));
+}
+
 module.exports = {
   getArticleById,
   getAllArticles,
   getCommentsByArticleId,
   postCommentByArticleId,
+  patchArticleById,
 };

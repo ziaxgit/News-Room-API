@@ -6,7 +6,8 @@ function getAllEndpoints(req, res, next) {
       res.status(200).send({ allEndpoints: data });
     })
     .catch((err) => {
-      console.log(err);
+      next(err);
+      // console.log(err);
     });
 }
 
