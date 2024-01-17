@@ -206,7 +206,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 1,
           });
         });
       });
@@ -270,7 +270,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("status:400 returns correct error message if any properties are missed", () => {
+  test("status:400 returns correct error message if any property in the body is not given", () => {
     const testObj = {
       username: "butter_bridge",
     };
@@ -288,7 +288,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       body: "I cease to exist for experimental purposes only",
     };
     return request(app)
-      .post("/api/articles/99999/comments")
+      .post("/api/articles/1/comments")
       .send(testObj)
       .expect(400)
       .then(({ body }) => {
