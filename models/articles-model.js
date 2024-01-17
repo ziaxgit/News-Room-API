@@ -1,7 +1,13 @@
 const db = require("../db/connection");
 
 function fetchArticleById(articleId) {
-  const sqlQuery = `SELECT * FROM articles WHERE articles.article_id = $1`;
+  const sqlQuery = `SELECT a.*, COUNT(c.body)::INT AS comment_count
+  FROM articles a
+  LEFT JOIN comments c ON a.article_id = c.article_id
+  WHERE a.article_id = $1
+  GROUP BY a.article_id
+  ORDER BY a.created_at DESC;
+  `;
   return db.query(sqlQuery, [articleId]).then(({ rows }) => {
     return rows.length === 0
       ? Promise.reject({ status: 404, message: "Article does not exist" })
@@ -34,7 +40,7 @@ function fetchAllArticles(queryObj) {
 
 function fetchCommentsByArticleId(articleId) {
   return fetchArticleById(articleId)
-    .then(() => {
+    .then((article) => {
       const sqlQuery = `SELECT * FROM 
     articles a JOIN comments c ON a.article_id = c.article_id
     WHERE a.article_id = $1
