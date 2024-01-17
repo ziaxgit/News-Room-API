@@ -10,6 +10,7 @@ const {
   patchArticleById,
 } = require("./controllers/articles-controller");
 const errorHandler = require("./middleware/errorHandler");
+const { deleteCommentById } = require("./controllers/comments-controller");
 app.use(express.json());
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);
@@ -18,6 +19,7 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchArticleById);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.use(errorHandler);
 
