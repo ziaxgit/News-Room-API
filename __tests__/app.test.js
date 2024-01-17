@@ -10,7 +10,7 @@ afterAll(() => db.end());
 
 // for any path that's not in endpoint
 describe("Invalid path", () => {
-  test("status:404 returns appropriate message for any invalid path", () => {
+  test("status:404 returns correct error message for any invalid path", () => {
     return request(app)
       .get("/not-a-valid-path")
       .expect(404)
@@ -123,7 +123,7 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
-  test("status:404 returns appropriate message when a valid but non-existent id is entered", () => {
+  test("status:404 returns correct error message when a valid but non-existent id is entered", () => {
     return request(app)
       .get("/api/articles/999")
       .expect(404)
@@ -131,7 +131,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.message).toBe("Article does not exist");
       });
   });
-  test("status:400 returns appropriate message when an invalid id is entered", () => {
+  test("status:400 returns correct error message when an invalid id is entered", () => {
     return request(app)
       .get("/api/articles/invalid-id")
       .expect(400)
@@ -230,7 +230,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.comments.length).toBe(0);
       });
   });
-  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+  test("status:404 returns correct error message when a valid but non-existent article id is entered", () => {
     return request(app)
       .get("/api/articles/683/comments")
       .expect(404)
@@ -239,7 +239,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("status:400 returns appropriate message when an invalid article id is entered", () => {
+  test("status:400 returns correct error message when an invalid article id is entered", () => {
     return request(app)
       .get("/api/articles/not-an-id/comments")
       .expect(400)
@@ -270,7 +270,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("status:400 returns appropriate message if any properties are missed", () => {
+  test("status:400 returns correct error message if any properties are missed", () => {
     const testObj = {
       username: "butter_bridge",
     };
@@ -282,7 +282,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("status:400 returns appropriate message if author_id and author of the article does not match", () => {
+  test("status:400 returns correct error message if author_id and author of the article does not match", () => {
     const testObj = {
       username: "test_user",
       body: "I cease to exist for experimental purposes only",
@@ -345,7 +345,7 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  test("status:404 returns appropriate message when a valid but non-existent article id is entered", () => {
+  test("status:404 returns correct error message when a valid but non-existent article id is entered", () => {
     return request(app)
       .patch("/api/articles/999")
       .send({ inc_votes: -10 })
@@ -354,7 +354,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.message).toBe("Article does not exist");
       });
   });
-  test("status:400 returns appropriate message when an invalid article id is entered", () => {
+  test("status:400 returns correct error message when an invalid article id is entered", () => {
     return request(app)
       .patch("/api/articles/invalid-id")
       .send({ inc_votes: -10 })
@@ -363,7 +363,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("status:400 returns appropriate message if body does not have any information", () => {
+  test("status:400 returns correct error message if body does not have any information", () => {
     return request(app)
       .patch("/api/articles/3")
       .send({})
@@ -372,7 +372,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("status:400 returns appropriate message if invalid data is given inside body", () => {
+  test("status:400 returns correct error message if invalid data is given inside body", () => {
     return request(app)
       .patch("/api/articles/3")
       .send({ inc_votes: "invalid" })
@@ -381,10 +381,32 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("status:400 returns appropriate message if invalid field (not inc_votes) is entered", () => {
+  test("status:400 returns correct error message if invalid field (not inc_votes) is entered", () => {
     return request(app)
       .patch("/api/articles/4")
       .send({ invalid_field: 3 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status:204 returns correct status code after deleting comment", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("status:404 returns correct error message if there are no comments for a valid, non-existent comment id", () => {
+    return request(app)
+      .delete("/api/comments/987")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("No comments found");
+      });
+  });
+  test("status:400 returns correct error message if invalid comment id is entered", () => {
+    return request(app)
+      .delete("/api/comments/not-a-valid-comment-id")
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");
