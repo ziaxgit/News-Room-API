@@ -79,14 +79,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(typeof body.article).toBe("object");
       });
   });
-  test("status:200 returns an article object that has 8 properties", () => {
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(Object.keys(body.article).length).toBe(8);
-      });
-  });
+
   test("status:200 returns an article object with correct datatype for each property", () => {
     return request(app)
       .get("/api/articles/1")
@@ -104,6 +97,7 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
+
   test("status:200 returns an article object with correct property names", () => {
     return request(app)
       .get("/api/articles/1")
@@ -123,6 +117,7 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
+
   test("status:404 returns correct error message when a valid but non-existent id is entered", () => {
     return request(app)
       .get("/api/articles/999")
@@ -486,6 +481,46 @@ describe("GET /api/articles - Topic query", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Invalid query");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("status:200 returns article object with added comment_count and correct value", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 11,
+        });
+      });
+  });
+  test("status:200 returns default comment_count 0 if an article has no comments", () => {
+    return request(app)
+      .get("/api/articles/7")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 7,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: 0,
+        });
       });
   });
 });
