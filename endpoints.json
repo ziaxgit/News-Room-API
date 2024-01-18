@@ -10,8 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all topics",
+    "queries": ["topic"],
     "exampleResponse": {
       "articles": [
         {
@@ -19,11 +19,97 @@
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
+          "created_at": 1527695953341
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object containing information on the article",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 0,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z",
+        "comment_count": "8"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Accepts an object in the form `{ inc_votes: newVote }`. updates the votes property of an article and responds with the updated article. ",
+    "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 1,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z",
+        "comment_count": "8"
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Accepts an object with the properties `username` and `body`. Responds with the posted comment",
+    "queries": [],
+    "exampleRequest": {
+      "username": "jessjelly",
+      "body": "example comment"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 50,
+        "author": "jessjelly",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "body": "example comment"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Serves an array of comments for the given article id",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 44,
+          "author": "grumpy19",
+          "article_id": 1,
+          "votes": 4,
+          "created_at": "2017-11-20T08:58:48.322Z",
+          "body": "Error est qui id corrupti et quod enim accusantium minus. Deleniti quae ea magni officiis et qui suscipit non."
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Accepts an object in the form `{ inc_votes: newVote }`. updates the votes property of a comment and responds with the updated comment. ",
+    "queries": [],
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 44,
+        "author": "grumpy19",
+        "article_id": 1,
+        "votes": 5,
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "body": "Error est qui id corrupti et quod enim accusantium minus. Deleniti quae ea magni officiis et qui suscipit non."
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Delete the given comment by `comment_id`. Responds with status 204 and no content.",
+    "queries": []
   }
 }
