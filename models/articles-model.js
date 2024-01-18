@@ -57,30 +57,6 @@ function fetchAllArticles(queryObj) {
   });
 }
 
-function fetchCommentsByArticleId(articleId) {
-  return fetchArticleById(articleId)
-    .then((article) => {
-      const sqlQuery = `SELECT * FROM 
-    articles a JOIN comments c ON a.article_id = c.article_id
-    WHERE a.article_id = $1
-    ORDER BY c.created_at DESC`;
-      return db.query(sqlQuery, [articleId]);
-    })
-    .then(({ rows }) => rows);
-}
-
-function insertCommentByArticleId(req) {
-  const values = [req.body.body, req.params.article_id, req.body.username];
-  const sqlQuery = `INSERT INTO comments
-  (body, article_id, author)
-  VALUES
-  ($1, $2, $3)
-  RETURNING *`;
-  return db.query(sqlQuery, values).then(({ rows }) => {
-    return rows[0];
-  });
-}
-
 function updateArticleById(req) {
   return fetchArticleById(req.params.article_id)
     .then(() => {
@@ -99,13 +75,5 @@ function updateArticleById(req) {
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
-  fetchCommentsByArticleId,
-  insertCommentByArticleId,
   updateArticleById,
 };
-/* 
-SELECT a.*, COUNT(c.body)::INT AS comment_count
-  FROM articles a
-  LEFT JOIN comments c ON a.article_id = c.article_id
-  GROUP BY a.article_id
-  ORDER BY a.created_at DESC */

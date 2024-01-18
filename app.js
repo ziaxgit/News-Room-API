@@ -1,17 +1,26 @@
 const express = require("express");
 const app = express();
+
 const getAllEndpoints = require("./controllers/endpoint-controller");
+
 const { getAllTopics } = require("./controllers/topics-controller");
+
 const {
   getArticleById,
   getAllArticles,
-  getCommentsByArticleId,
-  postCommentByArticleId,
   patchArticleById,
 } = require("./controllers/articles-controller");
+
 const errorHandler = require("./middleware/errorHandler");
-const { deleteCommentById } = require("./controllers/comments-controller");
+
+const {
+  getCommentsByArticleId,
+  postCommentByArticleId,
+  deleteCommentById,
+} = require("./controllers/comments-controller");
+
 const { getAllUsers } = require("./controllers/users-controller");
+
 app.use(express.json());
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);

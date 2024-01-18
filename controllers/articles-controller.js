@@ -27,22 +27,6 @@ function getAllArticles(req, res, next) {
     });
 }
 
-function getCommentsByArticleId(req, res, next) {
-  fetchCommentsByArticleId(req.params.article_id)
-    .then((data) => {
-      res.status(200).send({ comments: data });
-    })
-    .catch((err) => next(err));
-}
-
-function postCommentByArticleId(req, res, next) {
-  insertCommentByArticleId(req)
-    .then((data) => {
-      res.status(201).send({ comment: data });
-    })
-    .catch((err) => next(err));
-}
-
 function patchArticleById(req, res, next) {
   updateArticleById(req)
     .then((data) => {
@@ -54,7 +38,5 @@ function patchArticleById(req, res, next) {
 module.exports = {
   getArticleById,
   getAllArticles,
-  getCommentsByArticleId,
-  postCommentByArticleId,
   patchArticleById,
 };
