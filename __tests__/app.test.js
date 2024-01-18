@@ -677,7 +677,7 @@ describe("PATCH /api/comments/:comment_id", () => {
           article_id: expect.any(Number),
           author: expect.any(String),
           created_at: expect.any(String),
-          votes: -10, // decremented from 16 to -10
+          votes: 6, // decremented from 16 to 6
         });
       });
   });
