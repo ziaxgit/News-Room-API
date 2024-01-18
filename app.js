@@ -10,7 +10,12 @@ app.use(errorHandler);
 
 app.all("/*", (req, res) => {
   // if no path matches give default error
-  res.status(404).send({ message: "Not Found" });
+  res
+    .status(404)
+    .send({
+      message:
+        "Invalid endpoint. Use /api/ to find a list of available endpoints",
+    });
 });
 
 module.exports = app;
