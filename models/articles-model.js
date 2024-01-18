@@ -17,12 +17,7 @@ function fetchArticleById(articleId) {
 
 function fetchAllArticles(queryObj) {
   const topic = queryObj.topic;
-  if (
-    Object.keys(queryObj).length > 0 &&
-    !Object.keys(queryObj).includes("topic")
-  ) {
-    return Promise.reject({ status: 400, message: "Invalid query" });
-  }
+
   let sqlQuery = `SELECT a.author, a.title, a.article_id, a.topic, a.created_at,
   a.votes, a.article_img_url, COUNT(c.comment_id)::INT AS comment_count
   FROM articles a JOIN comments c ON a.article_id = c.article_id`;

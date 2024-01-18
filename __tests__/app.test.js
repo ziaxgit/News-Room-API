@@ -475,14 +475,6 @@ describe("GET /api/articles - Topic query", () => {
         expect(body.message).toBe("Topic not found");
       });
   });
-  test("status:400 returns correct error message if given an invalid query", () => {
-    return request(app)
-      .get("/api/articles?random=cats")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Invalid query");
-      });
-  });
 });
 
 describe("GET /api/articles/:article_id (comment_count)", () => {
