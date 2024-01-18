@@ -622,3 +622,27 @@ describe("GET /api/articles (sorting queries)", () => {
       });
   });
 });
+
+describe.only("GET /api/users/:username", () => {
+  test("status:200 returns an user object with correct properties and datatype", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toEqual({
+          username: "icellusedkars",
+          name: "sam",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        });
+      });
+  });
+  test("status:404 returns correct error message if no user is found by the given username", () => {
+    return request(app)
+      .get("/api/users/i-dont-exist")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("No user found");
+      });
+  });
+});
