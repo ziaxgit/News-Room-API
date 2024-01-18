@@ -52,7 +52,7 @@ function updateCommentById(req) {
   const commentId = req.params.comment_id;
   return commentValidation(commentId)
     .then(() => {
-      const sqlQuery = `UPDATE comments SET votes = $1 WHERE comment_id = $2 RETURNING *`;
+      const sqlQuery = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`;
       return db.query(sqlQuery, [votes, commentId]);
     })
     .then(({ rows }) => rows[0]);
