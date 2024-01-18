@@ -265,7 +265,19 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("status:400 returns correct error message if any property in the body is not given", () => {
+  test("status:400 returns correct error message if username field is missing", () => {
+    const testObj = {
+      body: "a random thought",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testObj)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns correct error message if body field is missing", () => {
     const testObj = {
       username: "butter_bridge",
     };
@@ -277,13 +289,48 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("status:400 returns correct error message if author_id and author of the article does not match", () => {
+  test("status:400 returns correct error message if empty body is sent to server", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send()
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:404 returns correct error message if non-existent username is given", () => {
     const testObj = {
       username: "test_user",
       body: "I cease to exist for experimental purposes only",
     };
     return request(app)
       .post("/api/articles/1/comments")
+      .send(testObj)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Username not found");
+      });
+  });
+  test("status:404 returns correct error message if valid but non-existent article id is given", () => {
+    const testObj = {
+      username: "butter_bridge",
+      body: "I cease to exist for experimental purposes only",
+    };
+    return request(app)
+      .post("/api/articles/6769/comments")
+      .send(testObj)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article does not exist");
+      });
+  });
+  test("status:400 returns correct error message if invalid article id is given", () => {
+    const testObj = {
+      username: "butter_bridge",
+      body: "I cease to exist for experimental purposes only",
+    };
+    return request(app)
+      .post("/api/articles/not-valid/comments")
       .send(testObj)
       .expect(400)
       .then(({ body }) => {
