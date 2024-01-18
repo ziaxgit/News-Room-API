@@ -646,3 +646,85 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("status:200 returns updated comment object with incremented votes and other properties", () => {
+    return request(app)
+      .patch("/api/comments/6")
+      .send({ inc_votes: 10 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 6,
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: 10, // incremented from 0 to 10
+        });
+      });
+  });
+
+  test("status:200 returns updated comment object with decremented votes and other properties", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -10 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 1,
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: -10, // decremented from 16 to -10
+        });
+      });
+  });
+
+  test("status:404 returns correct error message when a non-existent comment id is entered", () => {
+    return request(app)
+      .patch("/api/comments/9182")
+      .send({ inc_votes: -10 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Comment not found");
+      });
+  });
+  test("status:400 returns correct error message when an invalid comment id is entered", () => {
+    return request(app)
+      .patch("/api/comments/invalid-id")
+      .send({ inc_votes: -10 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns correct error message if body does not have any information", () => {
+    return request(app)
+      .patch("/api/comments/3")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns correct error message if invalid data is given inside body", () => {
+    return request(app)
+      .patch("/api/comments/3")
+      .send({ inc_votes: "invalid" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns correct error message if invalid field (not inc_votes) is entered", () => {
+    return request(app)
+      .patch("/api/comments/4")
+      .send({ invalid_field: 3 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});

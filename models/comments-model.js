@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { fetchArticleById } = require("../models/articles-model");
 const { usernameValidation } = require("../utils/usernameValidation");
-
+const { commentValidation } = require("../utils/commentValidation");
 function fetchCommentsByArticleId(articleId) {
   return fetchArticleById(articleId)
     .then(() => {
@@ -47,8 +47,20 @@ function deleteCommentByIdModel(commentId) {
   });
 }
 
+function updateCommentById(req) {
+  const votes = req.body.inc_votes;
+  const commentId = req.params.comment_id;
+  return commentValidation(commentId)
+    .then(() => {
+      const sqlQuery = `UPDATE comments SET votes = $1 WHERE comment_id = $2 RETURNING *`;
+      return db.query(sqlQuery, [votes, commentId]);
+    })
+    .then(({ rows }) => rows[0]);
+}
+
 module.exports = {
   fetchCommentsByArticleId,
   insertCommentByArticleId,
   deleteCommentByIdModel,
+  updateCommentById,
 };
