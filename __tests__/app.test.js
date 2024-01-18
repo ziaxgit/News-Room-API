@@ -15,7 +15,9 @@ describe("Invalid path", () => {
       .get("/not-a-valid-path")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Not Found");
+        expect(body.message).toBe(
+          "Invalid endpoint. Use /api/ to find a list of available endpoints"
+        );
       });
   });
 });
