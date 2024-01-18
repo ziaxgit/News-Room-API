@@ -623,7 +623,7 @@ describe("GET /api/articles (sorting queries)", () => {
   });
 });
 
-describe.only("GET /api/users/:username", () => {
+describe("GET /api/users/:username", () => {
   test("status:200 returns an user object with correct properties and datatype", () => {
     return request(app)
       .get("/api/users/icellusedkars")
