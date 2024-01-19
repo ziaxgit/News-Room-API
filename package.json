@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "express": "^4.18.2"
   },
   "jest": {
     "setupFilesAfterEnv": [
