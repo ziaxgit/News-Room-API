@@ -1,5 +1,8 @@
 const db = require("../db/connection");
 
+const { usernameValidation } = require("../utils/usernameValidation");
+const { topicValidation } = require("../utils/topicValidation");
+
 function fetchArticleById(articleId) {
   const sqlQuery = `SELECT a.*, COUNT(c.body)::INT AS comment_count
   FROM articles a
@@ -72,8 +75,40 @@ function updateArticleById(req) {
     });
 }
 
+function createNewArticle(req) {
+  if (Object.keys(req.body).length === 0) {
+    return Promise.reject({
+      status: 400,
+      message: "Missing required fields: author, title, body, topic",
+    });
+  }
+  const { body, author, title, topic } = req.body;
+  const article_img_url =
+    req.body.article_img_url ||
+    "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700";
+
+  const sqlQuery = `INSERT INTO articles
+  (author, title, body, topic, article_img_url)
+  VALUES
+  ($1, $2, $3, $4, $5)
+  RETURNING *`;
+
+  return topicValidation(topic)
+    .then(() => {
+      return usernameValidation(author);
+    })
+    .then(() => {
+      return db.query(sqlQuery, [author, title, body, topic, article_img_url]);
+    })
+    .then(({ rows }) => {
+      const newArticleId = rows[0].article_id;
+      return fetchArticleById(newArticleId);
+    });
+}
+
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
   updateArticleById,
+  createNewArticle,
 };
