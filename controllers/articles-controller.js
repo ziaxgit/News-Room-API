@@ -1,10 +1,10 @@
 const {
   fetchArticleById,
   fetchAllArticles,
-  fetchCommentsByArticleId,
-  insertCommentByArticleId,
   updateArticleById,
+  createNewArticle,
 } = require("../models/articles-model");
+
 const { topicValidation } = require("../utils/topicValidation");
 
 function getArticleById(req, res, next) {
@@ -35,8 +35,19 @@ function patchArticleById(req, res, next) {
     .catch((err) => next(err));
 }
 
+function postNewArticle(req, res, next) {
+  createNewArticle(req)
+    .then((data) => {
+      res.status(201).send({ article: data });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getArticleById,
   getAllArticles,
   patchArticleById,
+  postNewArticle,
 };

@@ -4,7 +4,7 @@ const articlesRouter = express.Router();
 const {
   getArticleById,
   getAllArticles,
-  patchArticleById,
+  patchArticleById, postNewArticle
 } = require("../controllers/articles-controller");
 
 const {
@@ -12,7 +12,7 @@ const {
   postCommentByArticleId,
 } = require("../controllers/comments-controller");
 
-articlesRouter.get("/", getAllArticles);
+articlesRouter.route("/").get(getAllArticles).post(postNewArticle)
 articlesRouter.get("/:article_id", getArticleById);
 
 articlesRouter
