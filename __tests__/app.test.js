@@ -840,3 +840,25 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("status:204 returns correct status code after deleting an article id", () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+  test("status:404 returns correct error message if a valid but non existent article id is entered", () => {
+    return request(app)
+      .delete("/api/articles/112112")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article does not exist");
+      });
+  });
+  test("status:400 returns correct error message if an invalid article id is entered", () => {
+    return request(app)
+      .delete("/api/articles/not-valid-id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});

@@ -106,9 +106,23 @@ function createNewArticle(req) {
     });
 }
 
+function deleteArticleModel(articleId) {
+  return fetchArticleById(articleId)
+    .then(() => {
+      const sqlQuery = `DELETE FROM articles WHERE article_id = $1`;
+      return db.query(sqlQuery, [articleId]);
+    })
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 400, message: "Bad request" });
+      }
+    });
+}
+
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
   updateArticleById,
   createNewArticle,
+  deleteArticleModel,
 };
