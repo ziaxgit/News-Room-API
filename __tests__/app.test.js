@@ -862,3 +862,47 @@ describe("DELETE /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("POST /api/topics", () => {
+  test("status:201 returns the newly created topic object", () => {
+    const newTopic = { slug: "new topic", description: "hello there lurker" };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.topic).toEqual(newTopic);
+      });
+  });
+  test("status:400 returns correct error message if either slug or description field is missing", () => {
+    const newTopic = { slug: "new topic" };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Error. Slug and Description field required");
+      });
+  });
+  test("status:400 returns correct error message if both slug or description field is missing", () => {
+    return request(app)
+      .post("/api/topics")
+      .send() // nothing is sent
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Error. Slug and Description field required");
+      });
+  });
+  test("status:400 returns correct error message if either slug or description field is empty", () => {
+    const newTopic = { slug: "", description: "slug is empty" };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Error. Slug and Description fields must not be empty"
+        );
+      });
+  });
+});

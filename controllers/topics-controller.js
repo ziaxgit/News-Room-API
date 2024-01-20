@@ -1,4 +1,4 @@
-const { allTopicsModel } = require("../models/topics-model");
+const { allTopicsModel, createNewTopic } = require("../models/topics-model");
 
 function getAllTopics(req, res, next) {
   allTopicsModel()
@@ -10,4 +10,12 @@ function getAllTopics(req, res, next) {
     });
 }
 
-module.exports = { getAllTopics };
+function postNewTopic(req, res, next) {
+  createNewTopic(req)
+    .then((data) => {
+      res.status(201).send({ topic: data });
+    })
+    .catch((err) => next(err));
+}
+
+module.exports = { getAllTopics, postNewTopic };
