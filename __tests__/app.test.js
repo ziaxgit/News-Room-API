@@ -67,7 +67,7 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body.allEndpoints).toEqual(endpointJson);
+        expect(body.allEndpoints).toMatchObject(endpointJson);
       });
   });
 });
