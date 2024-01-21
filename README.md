@@ -1,6 +1,6 @@
 # [Zia's News API](https://zia-nc-news.onrender.com/api)
 
-A RESTful backend for my website Zia's News (coming soon), resembling Reddit. The website features a collection of articles, users, and comments, and this API allows access to various information. Filter articles by topic, sort by date, comment count, article ID, author, or number of votes in ascending or descending order. Additionally, you can vote on articles or comments and post/delete specific articles and the comments of an article.
+A RESTful backend for my website Zia's News (coming soon), resembling Reddit. The website features a collection of articles, users, and comments, and this API allows access to various information. Filter articles by topic, sort by date, title, article ID, author, or number of votes in ascending or descending order. Additionally, you can vote on articles or comments and post/delete specific articles and the comments of an article.
 
 ## Technology Stack
 
@@ -31,7 +31,7 @@ Development tools include Husky, Nodemon, Supertest, Jest, Jest-Sorted, and Pg-F
 ### **GET** /api/articles Query Parameters
 | Query   | Options                                         | Default    |
 | ------- | ----------------------------------------------- | ---------- |
-| sort_by | article_id, author, title, comment_count, votes | created_at |
+| sort_by | article_id, author, title, votes | created_at |
 | order   | asc, desc                                       | desc       |
 | topic   | coding, football, cooking                       | all topics |
 
