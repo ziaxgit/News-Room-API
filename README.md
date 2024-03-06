@@ -1,13 +1,13 @@
-# [Zia's News API](https://zia-nc-news.onrender.com/api)
+# [News Room API](https://zia-nc-news.onrender.com/api)
 
-A RESTful API that serves as the backend of my website [Zia's News](https://zias-news.netlify.app/) which is similar to Reddit in functionality. The website features a collection of articles, users, and comments, and this API allows access to these various information. User is able to filter articles by topic, sort by date, title, article ID, author, or number of votes in ascending or descending order. Additionally, you can vote on articles or comments and post/delete specific articles and the comments of an article.
+A RESTful API that serves as the backend of my website [News Room](https://zias-news.netlify.app/) which is similar to Reddit in functionality. The website features a collection of articles, users, and comments, and this API allows access to these various information. User is able to filter articles by topic, sort by date, title, article ID, author, or number of votes in ascending or descending order. Additionally, you can vote on articles or comments and post/delete specific articles and the comments of an article.
 
 ## Technology Stack
 
 Built using Node.js, Express.js for the server, and PostgreSQL for the database. 
 Development tools include Husky, Nodemon, Supertest, Jest, Jest-Sorted, and Pg-Format.
 
-## Hosted Version: https://zia-nc-news.onrender.com/api
+## [Click here to view hosted version](https://zia-nc-news.onrender.com/api)
 
 ### Available Routes
 
@@ -41,8 +41,8 @@ Development tools include Husky, Nodemon, Supertest, Jest, Jest-Sorted, and Pg-F
 ## Cloning the repositry:
 - In the terminal please enter:
   ```
-  $ git clone https://github.com/ziaxgit/nc-news-backend-api
-  $ cd nc-news-backend-api
+  $ git clone https://github.com/ziaxgit/News-Room-API
+  $ cd News-Room-API
   ```
 ## Installing dependencies:
 - The required dependencies will be pulled from the package.json file. In the terminal please enter
