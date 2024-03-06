@@ -41,7 +41,7 @@ Development tools include Husky, Nodemon, Supertest, Jest, Jest-Sorted, and Pg-F
 ## Cloning the repositry:
 - In the terminal please enter:
   ```
-  $ git clone https://github.com/ziaxgit/News-Room-API
+  $ git clone https://github.com/ziaxgit/News-Room-API.git
   $ cd News-Room-API
   ```
 ## Installing dependencies:
