@@ -17,7 +17,7 @@
   "GET /api/articles": {
     "description": "Returns an array of all the articles.",
     "queries": {
-      "sort_by": ["article_id", "author", "votes", "comment_count"],
+      "sort_by": ["article_id", "author", "title", "votes", "created_at"],
       "order": ["asc", "desc"],
       "topic": ["coding", "football", "cooking"],
       "default": {

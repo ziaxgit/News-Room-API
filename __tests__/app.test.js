@@ -180,6 +180,104 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("GET /api/articles (topic query)", () => {
+  test("status:200 returns only the articles that match the given query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(1);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: "rogersop",
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            article_id: 5,
+            topic: "cats",
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+      });
+  });
+  test("status:200 returns empty array if given a topic that exists but has no article", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("status:404 returns correct error message if given a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=idontexist")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Topic not found");
+      });
+  });
+});
+
+describe("GET /api/articles (sorting queries)", () => {
+  test("status:200 returns articles sorted by 'created_at' in descending order if sort_by and order is omitted", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("status:200 returns articles sorted by the specified column in descending order when order is omitted", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        expect(body.articles).toBeSortedBy("author", {
+          descending: true,
+        });
+      });
+  });
+  test("status:200 returns articles sorted by the specified column in ascending order when order is given", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        expect(body.articles).toBeSortedBy("author");
+      });
+  });
+  test("status:200 should work if a topic is specified along with sort_by and order", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=article_id&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(12);
+        expect(body.articles).toBeSortedBy("article_id");
+      });
+  });
+  test("status:400 returns correct message if given invalid column name as sort by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=sql-injection")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("status:400 returns correct message if given invalid order name as order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=possible-sql-injection")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("status:200 returns an array of comments", () => {
     return request(app)
@@ -487,45 +585,6 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles (topic query)", () => {
-  test("status:200 returns only the articles that match the given query", () => {
-    return request(app)
-      .get("/api/articles?topic=cats")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).toBe(1);
-        body.articles.forEach((article) => {
-          expect(article).toMatchObject({
-            author: "rogersop",
-            title: "UNCOVERED: catspiracy to bring down democracy",
-            article_id: 5,
-            topic: "cats",
-            created_at: expect.any(String),
-            votes: 0,
-            article_img_url:
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          });
-        });
-      });
-  });
-  test("status:200 returns empty array if given a topic that exists but has no article", () => {
-    return request(app)
-      .get("/api/articles?topic=paper")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles).toEqual([]);
-      });
-  });
-  test("status:404 returns correct error message if given a topic that does not exist", () => {
-    return request(app)
-      .get("/api/articles?topic=idontexist")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Topic not found");
-      });
-  });
-});
-
 describe("GET /api/articles/:article_id (comment_count)", () => {
   test("status:200 returns article object with added comment_count and correct value", () => {
     return request(app)
@@ -562,65 +621,6 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
           article_img_url: expect.any(String),
           comment_count: 0,
         });
-      });
-  });
-});
-
-describe("GET /api/articles (sorting queries)", () => {
-  test("status:200 returns articles sorted by 'created_at' in descending order if sort_by and order is omitted", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).toBe(13);
-        expect(body.articles).toBeSortedBy("created_at", {
-          descending: true,
-        });
-      });
-  });
-  test("status:200 returns articles sorted by the specified column in descending order when order is omitted", () => {
-    return request(app)
-      .get("/api/articles?sort_by=author")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).toBe(13);
-        expect(body.articles).toBeSortedBy("author", {
-          descending: true,
-        });
-      });
-  });
-  test("status:200 returns articles sorted by the specified column in ascending order when order is given", () => {
-    return request(app)
-      .get("/api/articles?sort_by=author&order=asc")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).toBe(13);
-        expect(body.articles).toBeSortedBy("author");
-      });
-  });
-  test("status:200 should work if a topic is specified along with sort_by and order", () => {
-    return request(app)
-      .get("/api/articles?topic=mitch&sort_by=article_id&order=asc")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).toBe(12);
-        expect(body.articles).toBeSortedBy("article_id");
-      });
-  });
-  test("status:400 returns correct message if given invalid column name as sort by", () => {
-    return request(app)
-      .get("/api/articles?sort_by=sql-injection")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request");
-      });
-  });
-  test("status:400 returns correct message if given invalid order name as order", () => {
-    return request(app)
-      .get("/api/articles?sort_by=article_id&order=possible-sql-injection")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request");
       });
   });
 });

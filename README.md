@@ -31,7 +31,7 @@ Development tools include Husky, Nodemon, Supertest, Jest, Jest-Sorted, and Pg-F
 ### **GET** /api/articles Query Parameters
 | Query   | Options                                         | Default    |
 | ------- | ----------------------------------------------- | ---------- |
-| sort_by | article_id, author, title, votes | created_at |
+| sort_by | article_id, author, title, votes, created_at | created_at |
 | order   | asc, desc                                       | desc       |
 | topic   | coding, football, cooking                       | all topics |
 

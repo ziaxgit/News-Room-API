@@ -25,12 +25,10 @@ function fetchAllArticles(queryObj) {
 
   const validColumns = [
     "article_id",
-    "title",
-    "topic",
     "author",
-    "created_at",
+    "title",
     "votes",
-    "article_img_url",
+    "created_at",
   ];
 
   const validOrder = ["asc", "ASC", "desc", "DESC"];
